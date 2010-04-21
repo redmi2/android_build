@@ -92,6 +92,10 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   --stash_threshold <float>
       Specifies the threshold that will be used to compute the maximum
       allowed stash size (defaults to 0.8).
+
+  --override_device <device>
+      Override device-specific asserts. Can be a comma-separated list.
+
 """
 
 import sys
@@ -129,6 +133,7 @@ OPTIONS.block_based = False
 OPTIONS.updater_binary = None
 OPTIONS.oem_source = None
 OPTIONS.fallback_to_full = True
+OPTIONS.override_device = 'auto'
 OPTIONS.full_radio = False
 OPTIONS.full_bootloader = False
 # Stash size cannot exceed cache_size * threshold.
@@ -413,7 +418,10 @@ def SignOutput(temp_zip_name, output_zip_name):
 def AppendAssertions(script, info_dict, oem_dict=None):
   oem_props = info_dict.get("oem_fingerprint_properties")
   if oem_props is None or len(oem_props) == 0:
-    device = GetBuildProp("ro.product.device", info_dict)
+    if OPTIONS.override_device == "auto":
+      device = GetBuildProp("ro.product.device", info_dict)
+    else:
+      device = OPTIONS.override_device
     script.AssertDevice(device)
   else:
     if oem_dict is None:
@@ -1542,6 +1550,8 @@ def main(argv):
       OPTIONS.block_based = True
     elif o in ("-b", "--binary"):
       OPTIONS.updater_binary = a
+    elif o in ("--override_device"):
+      OPTIONS.override_device = a
     elif o in ("--no_fallback_to_full",):
       OPTIONS.fallback_to_full = False
     elif o == "--stash_threshold":
@@ -1575,7 +1585,7 @@ def main(argv):
                                  "verify",
                                  "no_fallback_to_full",
                                  "stash_threshold=",
-                             ], extra_option_handler=option_handler)
+                             "override_device="], extra_option_handler=option_handler)
 
   if len(args) != 2:
     common.Usage(__doc__)
