@@ -166,6 +166,7 @@ OPTIONS.oem_source = None
 OPTIONS.oem_no_mount = False
 OPTIONS.fallback_to_full = True
 OPTIONS.full_radio = False
+OPTIONS.backuptool = True
 OPTIONS.full_bootloader = False
 # Stash size cannot exceed cache_size * threshold.
 OPTIONS.cache_size = None
@@ -629,6 +630,11 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   device_specific.FullOTA_InstallBegin()
 
+  if OPTIONS.backuptool:
+    script.Mount("/system")
+    script.RunBackup("backup")
+    script.Unmount("/system")
+
   system_progress = 0.75
 
   if OPTIONS.wipe_user_data:
@@ -701,6 +707,10 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
+
+  if OPTIONS.backuptool:
+    script.ShowProgress(0.05, 5)
+    script.RunBackup("restore")
 
   script.ShowProgress(0.05, 5)
   script.WriteRawImage("/boot", "boot.img")
