@@ -140,8 +140,8 @@ $(warning ************************************************************)
 $(error Directory names containing spaces not supported)
 endif
 
-java_version_str := $(shell unset _JAVA_OPTIONS && java -version 2>&1)
-javac_version_str := $(shell unset _JAVA_OPTIONS && javac -version 2>&1)
+java_version_str := $(shell unset _JAVA_OPTIONS JAVA_TOOL_OPTIONS && java -version 2>&1)
+javac_version_str := $(shell unset _JAVA_OPTIONS JAVA_TOOL_OPTIONS && javac -version 2>&1)
 
 # Check for the correct version of java, should be 1.7 by
 # default, and 1.8 if EXPERIMENTAL_USE_JAVA8 is set
@@ -189,7 +189,6 @@ $(info ************************************************************)
 $(info You asked for an OpenJDK 7 build but your version is)
 $(info $(java_version_str).)
 $(info ************************************************************)
-$(error stop)
 endif # java version is not OpenJdk
 else # if requires_openjdk
 ifneq ($(shell echo '$(java_version_str)' | grep -i openjdk),)
@@ -200,7 +199,6 @@ $(info You use OpenJDK but only Sun/Oracle JDK is supported.)
 $(info Please follow the machine setup instructions at)
 $(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
 $(info ************************************************************)
-$(error stop)
 endif # java version is not Sun Oracle JDK
 endif # if requires_openjdk
 
@@ -216,7 +214,6 @@ $(info $(space))
 $(info Please follow the machine setup instructions at)
 $(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
 $(info ************************************************************)
-$(error stop)
 endif
 
 
@@ -295,7 +292,7 @@ endif
 
 # Add build properties for ART. These define system properties used by installd
 # to pass flags to dex2oat.
-ADDITIONAL_BUILD_PROPERTIES += persist.sys.dalvik.vm.lib.2=libart
+ADDITIONAL_BUILD_PROPERTIES += persist.sys.dalvik.vm.lib.2=libart.so
 ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.isa.$(TARGET_ARCH).variant=$(DEX2OAT_TARGET_CPU_VARIANT)
 ifneq ($(DEX2OAT_TARGET_INSTRUCTION_SET_FEATURES),)
   ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.isa.$(TARGET_ARCH).features=$(DEX2OAT_TARGET_INSTRUCTION_SET_FEATURES)

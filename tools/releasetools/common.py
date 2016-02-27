@@ -351,6 +351,21 @@ def BuildBootableImage(sourcedir, fs_config_file, info_dict=None):
     cmd.append("--base")
     cmd.append(open(fn).read().rstrip("\n"))
 
+  fn = os.path.join(sourcedir, "tagsaddr")
+  if os.access(fn, os.F_OK):
+    cmd.append("--tags-addr")
+    cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "ramdisk_offset")
+  if os.access(fn, os.F_OK):
+    cmd.append("--ramdisk_offset")
+    cmd.append(open(fn).read().rstrip("\n"))
+
+  fn = os.path.join(sourcedir, "dt_args")
+  if os.access(fn, os.F_OK):
+    cmd.append("--dt")
+    cmd.append(open(fn).read().rstrip("\n"))
+
   fn = os.path.join(sourcedir, "pagesize")
   if os.access(fn, os.F_OK):
     cmd.append("--pagesize")
@@ -455,6 +470,7 @@ def UnzipTemp(filename, pattern=None):
   OPTIONS.tempfiles.append(tmp)
 
   def unzip_to_dir(filename, dirname):
+    subprocess.call(["rm", "-rf", dirname + filename, "targetfiles-*"])
     cmd = ["unzip", "-o", "-q", filename, "-d", dirname]
     if pattern is not None:
       cmd.append(pattern)
