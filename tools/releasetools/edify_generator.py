@@ -160,7 +160,7 @@ class EdifyGenerator(object):
            ", ".join(["%s" % (b,) for b in basebands]) +
            '; this device has baseband " + getprop("ro.baseband") + ".");' +
            ");")
-    self.script.append(self._WordWrap(cmd))
+    self.script.append(self.WordWrap(cmd))
 
   def RunBackup(self, command):
     self.script.append('package_extract_file("system/bin/backuptool.sh", "/tmp/backuptool.sh");')
