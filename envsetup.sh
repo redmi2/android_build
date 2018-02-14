@@ -613,6 +613,10 @@ function lunch()
     export TARGET_PLATFORM_VERSION=$(get_build_var TARGET_PLATFORM_VERSION)
     export TARGET_BUILD_TYPE=release
 
+    export SDCLANG_CONFIG="vendor/SDCLang/sdclang.json"
+    export SDCLANG_AE_CONFIG="vendor/SDCLang/sdclangAE.json"
+    export SDCLANG_SA_ENABLED=false
+
     echo
 
     set_stuff_for_environment
